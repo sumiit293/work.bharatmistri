@@ -391,7 +391,7 @@ export default function RegistrationForm() {
                   },
                 })}
                 disabled={otpVerified}
-                className="flex-7 p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="flex-6 p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="10-digit number"
               />
 
@@ -399,7 +399,7 @@ export default function RegistrationForm() {
                 type="button"
                 onClick={handleSendOtp}
                 disabled={otpVerified || loadingSendOtp}
-                className="flex-3 h-10 px-2 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-4 h-10 px-2 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loadingSendOtp ? <Spinner /> : "Send OTP"}
               </button>
