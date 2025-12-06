@@ -1,26 +1,92 @@
 @import "tailwindcss";
 
+/* ───────────────────────────────────────────────
+   Root Theme (Light Mode)
+────────────────────────────────────────────────── */
 :root {
+  /* Base colors */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Primary color palette */
+  --primary: #2746A1;            /* main */
+  --primary-light: #3B5DD1;      /* hover */
+  --primary-dark: #1B3476;       /* pressed */
+  --primary-foreground: #ffffff; /* text on primary */
+
+  /* Border color */
+  --border-primary: rgba(39, 70, 161, 0.25);
 }
 
+/* ───────────────────────────────────────────────
+   Tailwind Tokens Mapping
+────────────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-border-primary: var(--border-primary);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* ───────────────────────────────────────────────
+   Dark Mode
+────────────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    /* Adjusted to match dark UI */
+    --primary-light: #4D6EE0;  /* hover in dark */
+    --primary-dark: #162A5B;   /* pressed in dark */
   }
 }
 
+/* ───────────────────────────────────────────────
+   Global Styles
+────────────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ───────────────────────────────────────────────
+   Legacy Button Utilities (Optional)
+   (You can remove these if you switch to Tailwind-only)
+────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--border-primary);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: inherit;
+  border: none;
 }

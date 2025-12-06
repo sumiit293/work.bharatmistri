@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bharatmistri.com/sitemap.xml
+
+# Block unnecessary crawling
+Disallow: /api/
+Disallow: /_next/
+Disallow: /.next/
