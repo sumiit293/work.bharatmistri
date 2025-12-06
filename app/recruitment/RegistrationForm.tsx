@@ -60,6 +60,7 @@ export default function RegistrationForm() {
     handleSubmit,
     watch,
     setError,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -298,7 +299,9 @@ export default function RegistrationForm() {
       setStep(1);
       setRecordId(null);
       setStatusMessage(null);
-      // reset form values (optional)
+      reset();
+      setOtpVerified(false);
+      setOtpAttempted(false);
       // you could use reset() from react-hook-form if desired
     } catch (err) {
       showToastMessage("Unexpected error during finalize", "error");
