@@ -386,7 +386,7 @@ export default function RegistrationForm() {
                 type="button"
                 onClick={handleSendOtp}
                 disabled={otpVerified || loadingSendOtp}
-                className="h-10 min-w-[120px] px-4 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="h-10 min-w-[70px] px-4 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loadingSendOtp ? <Spinner /> : "Send OTP"}
               </button>
