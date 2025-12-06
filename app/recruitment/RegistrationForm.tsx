@@ -45,7 +45,10 @@ export default function RegistrationForm() {
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [showToast, setShowToast] = useState(false);
 
-  const showToastMessage = (message: string, type: "success" | "error" = "success") => {
+  const showToastMessage = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
     setToastMessage(message);
     setToastType(type);
     setShowToast(true);
@@ -335,7 +338,9 @@ export default function RegistrationForm() {
       </div>
 
       <div className="mb-6">
-        <small className="block text-center text-gray-500">Step {step} of 3</small>
+        <small className="block text-center text-gray-500">
+          Step {step} of 3
+        </small>
       </div>
 
       {statusMessage && (
@@ -362,11 +367,16 @@ export default function RegistrationForm() {
             <input
               {...register("name", {
                 required: "Name is required",
-                minLength: { value: 2, message: "Name must be at least 2 characters" },
+                minLength: {
+                  value: 2,
+                  message: "Name must be at least 2 characters",
+                },
               })}
               className="mt-1 w-full p-2 border rounded"
             />
-            {errors.name && <div className="text-red-600">{errors.name.message}</div>}
+            {errors.name && (
+              <div className="text-red-600">{errors.name.message}</div>
+            )}
           </div>
 
           <div>
@@ -375,10 +385,13 @@ export default function RegistrationForm() {
               <input
                 {...register("primaryMobileNumber", {
                   required: "Mobile number is required",
-                  pattern: { value: /^[0-9]{10}$/, message: "Enter a valid 10-digit mobile number" },
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Enter a valid 10-digit mobile number",
+                  },
                 })}
                 disabled={otpVerified}
-                className="flex-1 p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="flex-7 p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="10-digit number"
               />
 
@@ -386,14 +399,16 @@ export default function RegistrationForm() {
                 type="button"
                 onClick={handleSendOtp}
                 disabled={otpVerified || loadingSendOtp}
-                className="h-10 min-w-[70px] px-2 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-3 h-10 px-2 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loadingSendOtp ? <Spinner /> : "Send OTP"}
               </button>
             </div>
 
             {errors.primaryMobileNumber && (
-              <div className="text-red-600 text-sm mt-1">{errors.primaryMobileNumber.message}</div>
+              <div className="text-red-600 text-sm mt-1">
+                {errors.primaryMobileNumber.message}
+              </div>
             )}
           </div>
 
@@ -432,7 +447,9 @@ export default function RegistrationForm() {
                   className="mt-1 w-full p-2 border rounded"
                   placeholder="e.g. Electrical"
                 />
-                <div className="text-sm text-red-600 mt-1">{categoriesError}</div>
+                <div className="text-sm text-red-600 mt-1">
+                  {categoriesError}
+                </div>
               </>
             ) : (
               <select
@@ -441,38 +458,60 @@ export default function RegistrationForm() {
               >
                 <option value="">Select category</option>
                 {categories.map((c: any) => (
-                  <option key={c._id || c.id || c.value} value={c._id || c.id || c.value}>
+                  <option
+                    key={c._id || c.id || c.value}
+                    value={c._id || c.id || c.value}
+                  >
                     {c.name?.en || c.name || c.label || c}
                   </option>
                 ))}
               </select>
             )}
-            {errors.category && <div className="text-red-600">{String(errors.category.message || "Category is required")}</div>}
+            {errors.category && (
+              <div className="text-red-600">
+                {String(errors.category.message || "Category is required")}
+              </div>
+            )}
           </div>
 
           <div>
-            <label className="block font-medium">Skills (comma separated)</label>
+            <label className="block font-medium">
+              Skills (comma separated)
+            </label>
             <input
-              {...register("skillsText", { required: "At least one skill required" })}
+              {...register("skillsText", {
+                required: "At least one skill required",
+              })}
               className="mt-1 w-full p-2 border rounded"
               placeholder="e.g. Wiring, Fan Repair"
             />
-            {errors.skillsText && <div className="text-red-600">At least one skill required</div>}
+            {errors.skillsText && (
+              <div className="text-red-600">At least one skill required</div>
+            )}
           </div>
 
           <div>
             <label className="block font-medium">Experience</label>
-            <select {...register("experience", { required: "Experience required" })} className="mt-1 w-full p-2 border rounded">
+            <select
+              {...register("experience", { required: "Experience required" })}
+              className="mt-1 w-full p-2 border rounded"
+            >
               <option value="">Select</option>
               <option value="0-1 year">0-1 year</option>
               <option value="1-3 years">1-3 years</option>
               <option value="3+ years">3+ years</option>
             </select>
-            {errors.experience && <div className="text-red-600">Experience is required</div>}
+            {errors.experience && (
+              <div className="text-red-600">Experience is required</div>
+            )}
           </div>
 
           <div className="flex gap-2">
-            <button type="button" onClick={() => setStep(1)} className="border px-4 py-2 rounded">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="border px-4 py-2 rounded"
+            >
               Back
             </button>
 
@@ -492,14 +531,25 @@ export default function RegistrationForm() {
         <form onSubmit={handleSubmit(onFinalize)} className="space-y-4">
           <div>
             <label className="inline-flex items-center">
-              <input type="checkbox" {...register("verificationConfirmed")} className="mr-2" />
-              I confirm that the information and photos are authentic and verifiable.
+              <input
+                type="checkbox"
+                {...register("verificationConfirmed")}
+                className="mr-2"
+              />
+              I confirm that the information and photos are authentic and
+              verifiable.
             </label>
-            {errors.verificationConfirmed && <div className="text-red-600">You must confirm verification</div>}
+            {errors.verificationConfirmed && (
+              <div className="text-red-600">You must confirm verification</div>
+            )}
           </div>
 
           <div className="flex gap-2">
-            <button type="button" onClick={() => setStep(2)} className="border px-4 py-2 rounded">
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              className="border px-4 py-2 rounded"
+            >
               Back
             </button>
 
@@ -518,7 +568,9 @@ export default function RegistrationForm() {
       {showToast && (
         <div
           className={`fixed top-4 left-1/2 -translate-x-1/2 px-4 py-3 rounded shadow-lg text-sm text-center max-w-[90%] ${
-            toastType === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+            toastType === "success"
+              ? "bg-green-600 text-white"
+              : "bg-red-600 text-white"
           }`}
         >
           {toastMessage}
