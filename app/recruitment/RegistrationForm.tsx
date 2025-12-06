@@ -28,7 +28,7 @@ export default function RegistrationForm() {
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch, setError, formState: { errors }, reset } = useForm<FormValues>({
+  const { register, handleSubmit, watch, setError, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       name: "",
       primaryMobileNumber: "",
@@ -162,44 +162,21 @@ export default function RegistrationForm() {
     const res = await api.finalize(recordId, !!values.verificationConfirmed);
     setSubmitting(false);
     if (!res.success) { setStatusMessage(res.error || "Failed to finalize"); return; }
-    
-    // Show success toast
-    setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 3000);
-    
-    // Reset form and state
-    setTimeout(() => {
-      reset({
-        name: "",
-        primaryMobileNumber: "",
-        otp: "",
-        category: "",
-        skillsText: "",
-        experience: "",
-        verificationConfirmed: false,
-      });
-      setStep(1);
-      setRecordId(null);
-      setStatusMessage(null);
-      setOtpVerified(false);
-      setOtpAttempted(false);
-    }, 500);
+    alert("Technician submitted successfully");
+    // reset
+    setStep(1);
+    setRecordId(null);
+    setStatusMessage(null);
   }
 
   return (
     <div className="max-w-3xl mx-auto p-0 sm:p-6">
-      {showSuccessToast && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm sm:text-base text-center">
-          Technician submitted successfully!
-        </div>
-      )}
-      
       <div className="mb-6">
         <img src="/BMSVG.svg" alt="BM Logo" className="h-12" style={{ filter: "brightness(0) saturate(100%) invert(18%) sepia(67%) saturate(1313%) hue-rotate(206deg)" }} />
       </div>
       <div className="mb-6 mx-0 px-0">
-          <h2 className="text-2xl text-center font-semibold text-primary-dark">Join Bharat Mistri as a Skilled Technician</h2>
-          <p className="text-center text-sm text-gray-600 mt-2">Register today and start earning. Quick and easy registration for electricians, plumbers, carpenters, and all skilled workers.</p>
+        <h2 className="text-2xl text-center font-semibold text-primary-dark">Join Bharat Mistri as a Skilled Technician</h2>
+        <p className="text-center text-gray-600 text-sm mt-2">Register today and start earning. Quick and easy registration for electricians, plumbers, carpenters, and all skilled workers.</p>
       </div>
       <div className="mb-6">
         <small className="block text-center text-gray-500">Step {step} of 3</small>
@@ -210,14 +187,14 @@ export default function RegistrationForm() {
       {step === 1 && (
         <form onSubmit={handleSubmit(onCreateBasic)} className="space-y-4">
           <div>
-            <label className="block font-medium">Full Name <span className="text-red-500">*</span></label>
-            <input {...register("name", { required: "Name is required", minLength: { value: 2, message: "Name must be at least 2 characters" } })} className="mt-1 w-full p-2 border rounded" placeholder="Your full name" />
+            <label className="block font-medium">Full name</label>
+            <input {...register("name", { required: "Name is required", minLength: { value: 2, message: "Name must be at least 2 characters" } })} className="mt-1 w-full p-2 border rounded" />
             {errors.name && <div className="text-red-600">{errors.name.message}</div>}
           </div>
 
           <div>
-            <label className="block font-medium">WhatsApp / Mobile Number <span className="text-red-500">*</span></label>
-            <input {...register("primaryMobileNumber", { required: "Mobile number is required", pattern: { value: /^[0-9]{10}$/, message: "Enter a valid 10-digit mobile number" } })} disabled={otpVerified} className="mt-1 w-full p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed" placeholder="10-digit mobile number" />
+            <label className="block font-medium">Primary mobile number</label>
+            <input {...register("primaryMobileNumber", { required: "Mobile number is required", pattern: { value: /^[0-9]{10}$/, message: "Enter a valid 10-digit mobile number" } })} disabled={otpVerified} className="mt-1 w-full p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed" placeholder="10-digit number" />
             {errors.primaryMobileNumber && <div className="text-red-600">{errors.primaryMobileNumber.message}</div>}
           </div>
 
@@ -228,7 +205,7 @@ export default function RegistrationForm() {
           </div>
 
           <div className="flex gap-2">
-            {otpVerified && <button type="submit" disabled={submitting} className="btn btn-primary text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Save and Continue</button>}
+            <button type="submit" disabled={submitting || !otpVerified} className="btn btn-primary text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Save and Continue</button>
             {!otpVerified && otpAttempted && <span className="text-sm text-gray-600 self-center">Verify OTP to proceed</span>}
           </div>
         </form>
@@ -237,8 +214,7 @@ export default function RegistrationForm() {
       {step === 2 && (
         <form onSubmit={handleSubmit(onStep2Submit)} className="space-y-4">
           <div>
-            <label className="block font-medium">Trade / Skill Category <span className="text-red-500">*</span></label>
-            <p className="text-xs text-gray-500 mb-2">Select the type of work you specialize in (e.g., Electrical, Plumbing, Carpentry)</p>
+            <label className="block font-medium">Category</label>
             {categoriesLoading ? (
               <select disabled className="mt-1 w-full p-2 border rounded">
                 <option>Loading categories...</option>
@@ -262,19 +238,18 @@ export default function RegistrationForm() {
           </div>
 
           <div>
-            <label className="block font-medium">Your Skills & Expertise <span className="text-red-500">*</span></label>
-            <p className="text-xs text-gray-500 mb-2">List all the services and skills you can offer (comma separated)</p>
-            <input {...register("skillsText", { required: true })} className="mt-1 w-full p-2 border rounded" placeholder="e.g. Electrical wiring, Fan installation, AC repair" />
+            <label className="block font-medium">Skills (comma separated)</label>
+            <input {...register("skillsText", { required: true })} className="mt-1 w-full p-2 border rounded" placeholder="e.g. Wiring, Fan Repair" />
             {errors.skillsText && <div className="text-red-600">At least one skill required</div>}
           </div>
 
           <div>
-            <label className="block font-medium">Years of Experience <span className="text-red-500">*</span></label>
+            <label className="block font-medium">Experience</label>
             <select {...register("experience", { required: true })} className="mt-1 w-full p-2 border rounded">
-              <option value="">Select your experience level</option>
-              <option value="0-1 year">Fresher / 0-1 year</option>
-              <option value="1-3 years">1-3 years experience</option>
-              <option value="3+ years">3+ years experience</option>
+              <option value="">Select</option>
+              <option value="0-1 year">0-1 year</option>
+              <option value="1-3 years">1-3 years</option>
+              <option value="3+ years">3+ years</option>
             </select>
             {errors.experience && <div className="text-red-600">Experience is required</div>}
           </div>
@@ -288,17 +263,17 @@ export default function RegistrationForm() {
 
       {step === 3 && (
         <form onSubmit={handleSubmit(onFinalize)} className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded p-4">
-            <label className="inline-flex items-center cursor-pointer">
-              <input type="checkbox" {...register("verificationConfirmed")} className="mr-3 w-4 h-4 accent-blue-600" />
-              <span className="text-sm font-medium">I confirm that all the information I provided is authentic, accurate, and verifiable. I understand that providing false information may result in account suspension.</span>
+          <div>
+            <label className="inline-flex items-center">
+              <input type="checkbox" {...register("verificationConfirmed")} className="mr-2" />
+              I confirm that the information and photos are authentic and verifiable.
             </label>
-            {errors.verificationConfirmed && <div className="text-red-600 mt-2">{String(errors.verificationConfirmed.message)}</div>}
+            {errors.verificationConfirmed && <div className="text-red-600">You must confirm verification</div>}
           </div>
 
           <div className="flex gap-2">
             <button type="button" onClick={() => setStep(2)} className="btn btn-outline text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Back</button>
-            <button type="submit" disabled={submitting} className="btn btn-primary text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Complete Registration</button>
+            <button type="submit" disabled={submitting} className="btn btn-primary text-sm sm:text-base px-2 sm:px-4 py-1 sm:py-2">Finalize Submission</button>
           </div>
         </form>
       )}

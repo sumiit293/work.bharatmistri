@@ -3,7 +3,12 @@ import axios, { AxiosInstance } from "axios";
 // Build the API base URL. If the environment provides a base URL
 // without the router mount path, append the expected prefix so
 // frontend calls target `/api/technicianRecruitmentDrive`.
-const RAW_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
+const DEFAULT_API_BASE = "https://api.bharatmistri.com";
+let RAW_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
+// If no env var is provided in production builds, fall back to the official API
+if (!RAW_BASE && process.env.NODE_ENV === "production") {
+  RAW_BASE = DEFAULT_API_BASE;
+}
 const PREFIX = "/api/technicianRecruitmentDrive";
 const API_BASE = RAW_BASE.includes(PREFIX) ? RAW_BASE : (RAW_BASE + PREFIX);
 
