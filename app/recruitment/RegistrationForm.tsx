@@ -465,7 +465,7 @@ export default function RegistrationForm() {
                     key={c._id || c.id || c.value}
                     value={c._id || c.id || c.value}
                   >
-                    {c.name?.en || c.name || c.label || c}
+                    {c.name?.en || c.name || c.label || c} {`(${c.name?.hi || "" })`}
                   </option>
                 ))}
               </select>
@@ -482,9 +482,7 @@ export default function RegistrationForm() {
               Skills (comma separated)
             </label>
             <input
-              {...register("skillsText", {
-                required: "At least one skill required",
-              })}
+              {...register("skillsText")}
               className="mt-1 w-full p-2 border rounded"
               placeholder="e.g. Wiring, Fan Repair"
             />
