@@ -226,13 +226,13 @@ export default function RegistrationForm() {
       setError("category", { type: "manual", message: "Category required" });
       return;
     }
-    if (!values.skillsText || values.skillsText.trim().length === 0) {
-      setError("skillsText", {
-        type: "manual",
-        message: "Provide at least one skill",
-      });
-      return;
-    }
+    // if (!values.skillsText || values.skillsText.trim().length === 0) {
+    //   setError("skillsText", {
+    //     type: "manual",
+    //     message: "Provide at least one skill",
+    //   });
+    //   return;
+    // }
     if (!values.experience) {
       setError("experience", {
         type: "manual",
