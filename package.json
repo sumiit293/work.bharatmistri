@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.31.4",
     "axios": "^1.13.2",
     "next": "16.0.7",
     "react": "19.2.0",

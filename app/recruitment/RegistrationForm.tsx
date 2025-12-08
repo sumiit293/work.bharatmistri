@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import api from "./api"; // <-- keep your api module
+import { AmplitudeService } from "../../services/Amplitude";
 
 type Step = 1 | 2 | 3;
 
@@ -18,6 +19,8 @@ type FormValues = {
 export default function RegistrationForm() {
   const [step, setStep] = useState<Step>(1);
   const [recordId, setRecordId] = useState<string | null>(null);
+
+  const amplitude = AmplitudeService.getInstance();
 
   // UI / messages
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -113,6 +116,12 @@ export default function RegistrationForm() {
     };
   }, []);
 
+  useEffect(() => {
+    amplitude?.track("technician_registration_viewed", {
+      page: "registration_form",
+    });
+  }, []);
+
   // small spinner component
   const Spinner = ({ size = 16 }: { size?: number }) => (
     <div
@@ -138,8 +147,25 @@ export default function RegistrationForm() {
     }
 
     setLoadingSendOtp(true);
+
+    amplitude?.track("otp_send_clicked", {
+      mobile_present: !!watchedMobile,
+    });
+
     try {
       const res = await api.sendOtp(mobile);
+
+      if (res && res.success) {
+        amplitude?.track("otp_sent_success", {
+          mobile: watchedMobile,
+        });
+        showToastMessage("OTP sent successfully!", "success");
+      } else {
+        amplitude?.track("otp_sent_failed", {
+          reason: res?.error || "unknown",
+        });
+      }
+
       if (res && res.success) {
         showToastMessage("OTP sent successfully!", "success");
       } else {
@@ -158,6 +184,8 @@ export default function RegistrationForm() {
   async function verifyOtpAndContinue() {
     const mobile = watch("primaryMobileNumber") || "";
     const otp = watch("otp") || "";
+
+    amplitude?.track("otp_verify_attempted");
 
     setStatusMessage(null);
 
@@ -207,6 +235,19 @@ export default function RegistrationForm() {
       setStatusMessage("OTP verified & details saved");
       showToastMessage("OTP verified & details saved", "success");
       setStep(2);
+
+      if (!otpRes || !otpRes.success) {
+        amplitude?.track("otp_verification_failed", {
+          mobile,
+        });
+        showToastMessage(otpRes?.error || "Invalid OTP", "error");
+        return;
+      } else {
+        amplitude?.track("otp_verification_success", {
+          mobile,
+          record_id: id,
+        });
+      }
     } catch (err) {
       showToastMessage("Unexpected error", "error");
     } finally {
@@ -218,22 +259,34 @@ export default function RegistrationForm() {
   // Step 2: Save category/skills/experience
   // --------------------------
   async function onStep2Submit(values: FormValues) {
+    // step 2 submit clicked
+    amplitude?.track("registration_step2_submit_clicked", {
+      step: 2,
+    });
+
     if (!recordId) {
+      amplitude?.track("registration_step2_blocked", {
+        reason: "missing_record_id",
+      });
+
       showToastMessage("Missing record id", "error");
       return;
     }
+
     if (!values.category) {
+      amplitude?.track("registration_step2_blocked", {
+        reason: "category_missing",
+      });
+
       setError("category", { type: "manual", message: "Category required" });
       return;
     }
-    // if (!values.skillsText || values.skillsText.trim().length === 0) {
-    //   setError("skillsText", {
-    //     type: "manual",
-    //     message: "Provide at least one skill",
-    //   });
-    //   return;
-    // }
+
     if (!values.experience) {
+      amplitude?.track("registration_step2_blocked", {
+        reason: "experience_missing",
+      });
+
       setError("experience", {
         type: "manual",
         message: "Experience required",
@@ -242,12 +295,21 @@ export default function RegistrationForm() {
     }
 
     setLoadingStep2Save(true);
+
     const skills = (values.skillsText || "")
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
 
     try {
+      // backend update started
+      amplitude?.track("registration_step2_submit_attempted", {
+        record_id: recordId,
+        category: values.category,
+        skills_count: skills.length,
+        experience: values.experience,
+      });
+
       const res = await api.updateSkillsCategory(recordId, {
         category: values.category,
         skills,
@@ -255,13 +317,31 @@ export default function RegistrationForm() {
       });
 
       if (!res || !res.success) {
+        amplitude?.track("registration_step2_submit_failed", {
+          record_id: recordId,
+          error: res?.error || "unknown",
+        });
+
         showToastMessage(res?.error || "Failed to update", "error");
         return;
       }
 
+      // ✅ STEP 2 SUCCESS
+      amplitude?.track("registration_step2_completed", {
+        record_id: recordId,
+        category: values.category,
+        skills_count: skills.length,
+        experience: values.experience,
+      });
+
       showToastMessage("Details saved", "success");
       setStep(3);
-    } catch (err) {
+    } catch (err: any) {
+      amplitude?.track("registration_step2_error", {
+        record_id: recordId,
+        message: err?.message || "exception",
+      });
+
       showToastMessage("Unexpected error saving details", "error");
     } finally {
       setLoadingStep2Save(false);
@@ -272,7 +352,16 @@ export default function RegistrationForm() {
   // Step 3: Finalize
   // --------------------------
   async function onFinalize(values: FormValues) {
+    // user clicked finalize
+    amplitude?.track("registration_finalize_clicked", {
+      step: 3,
+    });
+
     if (!values.verificationConfirmed) {
+      amplitude?.track("registration_finalize_blocked", {
+        reason: "verification_not_confirmed",
+      });
+
       setError("verificationConfirmed", {
         type: "manual",
         message: "You must confirm",
@@ -281,29 +370,53 @@ export default function RegistrationForm() {
     }
 
     if (!recordId) {
+      amplitude?.track("registration_finalize_blocked", {
+        reason: "missing_record_id",
+      });
+
       showToastMessage("Missing record id", "error");
       return;
     }
 
     setLoadingFinalize(true);
+
     try {
+      amplitude?.track("registration_finalize_attempted", {
+        record_id: recordId,
+      });
+
       const res = await api.finalize(recordId, true);
+
       if (!res || !res.success) {
+        amplitude?.track("registration_finalize_failed", {
+          record_id: recordId,
+          error: res?.error || "unknown",
+        });
+
         showToastMessage(res?.error || "Failed to finalize", "error");
         return;
       }
 
+      // ✅ SUCCESS — MAIN CONVERSION EVENT
+      amplitude?.track("registration_completed", {
+        record_id: recordId,
+      });
+
       showToastMessage("Technician submitted successfully!", "success");
 
-      // reset flow
+      // reset flow (after analytics)
       setStep(1);
       setRecordId(null);
       setStatusMessage(null);
       reset();
       setOtpVerified(false);
       setOtpAttempted(false);
-      // you could use reset() from react-hook-form if desired
-    } catch (err) {
+    } catch (err: any) {
+      amplitude?.track("registration_finalize_error", {
+        record_id: recordId,
+        message: err?.message || "exception",
+      });
+
       showToastMessage("Unexpected error during finalize", "error");
     } finally {
       setLoadingFinalize(false);
@@ -465,7 +578,8 @@ export default function RegistrationForm() {
                     key={c._id || c.id || c.value}
                     value={c._id || c.id || c.value}
                   >
-                    {c.name?.en || c.name || c.label || c} {`(${c.name?.hi || "" })`}
+                    {c.name?.en || c.name || c.label || c}{" "}
+                    {`(${c.name?.hi || ""})`}
                   </option>
                 ))}
               </select>
