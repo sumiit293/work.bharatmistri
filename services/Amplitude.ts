@@ -8,7 +8,6 @@ export class AmplitudeService {
 
     if (!amplitudeInstance) {
       amplitudeInstance = Amplitude.createInstance();
-      console.log("Amplitude instance created -> " + process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
       amplitudeInstance.init(
         process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY as string,
         undefined,
