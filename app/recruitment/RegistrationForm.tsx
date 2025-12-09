@@ -185,7 +185,7 @@ export default function RegistrationForm() {
     const mobile = watch("primaryMobileNumber") || "";
     const otp = watch("otp") || "";
 
-    amplitude?.track("otp_verify_attempted");
+    amplitude?.track("otp_verify_attempted",{mobile});
 
     setStatusMessage(null);
 
