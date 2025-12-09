@@ -183,9 +183,9 @@ export default function RegistrationForm() {
   // --------------------------
   async function verifyOtpAndContinue() {
     const mobile = watch("primaryMobileNumber") || "";
-    const otp = watch("otp") || "";
+    // const otp = watch("otp") || "";
 
-    amplitude?.track("otp_verify_attempted", { mobile });
+    // amplitude?.track("otp_verify_attempted", { mobile });
 
     setStatusMessage(null);
 
@@ -197,21 +197,21 @@ export default function RegistrationForm() {
       return;
     }
 
-    if (!/^[0-9]{4,6}$/.test(otp)) {
-      setMessageType("error");
-      setStatusMessage("Enter a valid OTP");
-      showToastMessage("Enter a valid OTP", "error");
-      return;
-    }
+    // if (!/^[0-9]{4,6}$/.test(otp)) {
+    //   setMessageType("error");
+    //   setStatusMessage("Enter a valid OTP");
+    //   showToastMessage("Enter a valid OTP", "error");
+    //   return;
+    // }
 
     setLoadingVerifyCreate(true);
     try {
-      const otpRes = await api.verifyOtp(mobile, Number(otp));
-      if (!otpRes || !otpRes.success) {
-        showToastMessage(otpRes?.error || "Invalid OTP", "error");
-        setLoadingVerifyCreate(false);
-        return;
-      }
+      // const otpRes = await api.verifyOtp(mobile, Number(otp));
+      // if (!otpRes || !otpRes.success) {
+      //   showToastMessage(otpRes?.error || "Invalid OTP", "error");
+      //   setLoadingVerifyCreate(false);
+      //   return;
+      // }
 
       // create basic details
       const createRes = await api.createBasicDetails(watch("name"), mobile);
@@ -230,24 +230,24 @@ export default function RegistrationForm() {
         null;
 
       setRecordId(id);
-      setOtpVerified(true);
+      // setOtpVerified(true);
       setMessageType("success");
       setStatusMessage("OTP verified & details saved");
-      showToastMessage("OTP verified & details saved", "success");
+      showToastMessage("Details saved", "success");
       setStep(2);
 
-      if (!otpRes || !otpRes.success) {
-        amplitude?.track("otp_verification_failed", {
-          mobile,
-        });
-        showToastMessage(otpRes?.error || "Invalid OTP", "error");
-        return;
-      } else {
-        amplitude?.track("otp_verification_success", {
-          mobile,
-          record_id: id,
-        });
-      }
+      // if (!otpRes || !otpRes.success) {
+      //   amplitude?.track("otp_verification_failed", {
+      //     mobile,
+      //   });
+      //   showToastMessage(otpRes?.error || "Invalid OTP", "error");
+      //   return;
+      // } else {
+      //   amplitude?.track("otp_verification_success", {
+      //     mobile,
+      //     record_id: id,
+      //   });
+      // }
     } catch (err) {
       showToastMessage("Unexpected error", "error");
     } finally {
@@ -499,7 +499,7 @@ export default function RegistrationForm() {
 
           <div>
             <label className="block font-medium">Primary mobile number</label>
-            <div className="flex gap-2 mt-1">
+            <div className="gap-2 mt-1">
               <input
                 {...register("primaryMobileNumber", {
                   required: "Mobile number is required",
@@ -508,19 +508,19 @@ export default function RegistrationForm() {
                     message: "Enter a valid 10-digit mobile number",
                   },
                 })}
-                disabled={otpVerified}
-                className="flex-6 p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
+                // disabled={otpVerified}
+                className="p-2 border rounded disabled:bg-gray-100 w-full disabled:cursor-not-allowed"
                 placeholder="10-digit number"
               />
 
-              <button
+              {/* <button
                 type="button"
                 onClick={handleSendOtp}
                 disabled={otpVerified || loadingSendOtp}
                 className="flex-4 h-10 px-2 py-2 border rounded text-sm sm:text-base bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loadingSendOtp ? <Spinner /> : "Send OTP"}
-              </button>
+              </button> */}
             </div>
 
             {errors.primaryMobileNumber && (
@@ -531,19 +531,19 @@ export default function RegistrationForm() {
           </div>
 
           <div className="flex flex-col gap-4 pt-2">
-            <input
+            {/* <input
               {...register("otp")}
               placeholder="Enter OTP"
               disabled={otpVerified}
               className="p-2 border rounded disabled:bg-gray-100 disabled:cursor-not-allowed text-sm flex-1"
-            />
+            /> */}
 
             <button
               type="submit"
               disabled={loadingVerifyCreate}
               className="h-10 min-w-[140px] px-4 py-2 pri text-white bg-primary rounded flex items-center justify-center gap-2"
             >
-              {loadingVerifyCreate ? <Spinner /> : "Verify OTP & Continue"}
+              {loadingVerifyCreate ? <Spinner /> : "Continue"}
             </button>
           </div>
         </form>
