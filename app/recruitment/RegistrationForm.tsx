@@ -185,7 +185,7 @@ export default function RegistrationForm() {
     const mobile = watch("primaryMobileNumber") || "";
     const otp = watch("otp") || "";
 
-    amplitude?.track("otp_verify_attempted",{mobile});
+    amplitude?.track("otp_verify_attempted", { mobile });
 
     setStatusMessage(null);
 
@@ -445,7 +445,9 @@ export default function RegistrationForm() {
           <span className="hidden sm:inline">
             Join Bharat Mistri as a Skilled Technician
           </span>
-          <span className="sm:hidden">Join Bharat Mistri</span>
+          <span className="sm:hidden">
+            आज ही भारत मिस्त्री पर रजिस्टर करें और कमाई शुरू करें
+          </span>
         </h2>
         <p className="hidden sm:block text-center text-gray-600 text-sm mt-2">
           Register today and start earning. Quick and easy registration for
